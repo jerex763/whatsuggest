@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.keystore
+android/keystore.jks
+
+# Secrets
+*.env
+config.local.*
+tailscale_key.txt
+
+# Logs
+logs/
+*.log
+
+# Go
+whatsapp-mcp/
+*.exe
+
+# OS
+.DS_Store
+Thumbs.db
