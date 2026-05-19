@@ -10,7 +10,13 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 API_KEY = os.environ.get("SUGGEST_API_KEY", "")
 MCP_SERVER_NAME = os.environ.get("MCP_SERVER_NAME", "whatsapp")
-CLAUDE_EXE = shutil.which("claude") or r"C:\Users\111\.local\bin\claude.exe"
+_claude_raw = shutil.which("claude") or r"C:\Users\111\.local\bin\claude.exe"
+# On Windows, shutil.which returns the .CMD wrapper which breaks subprocess line endings.
+# Use the actual .exe directly.
+if _claude_raw.upper().endswith(".CMD"):
+    _exe_candidate = _claude_raw.replace("claude.CMD", r"node_modules\@anthropic-ai\claude-code\bin\claude.exe").replace("claude.cmd", r"node_modules\@anthropic-ai\claude-code\bin\claude.exe")
+    _claude_raw = _exe_candidate if os.path.exists(_exe_candidate) else _claude_raw
+CLAUDE_CMD = [_claude_raw] if not _claude_raw.upper().endswith(".CMD") else ["cmd", "/c", _claude_raw]
 APP_VERSION = "1.0.0"
 _semaphore = threading.Semaphore(2)
 
@@ -27,8 +33,17 @@ def extract_suggestions(text: str) -> list:
 
 
 def find_result(stdout: str) -> dict:
-    """Find the type=result line in claude -p JSONL output."""
-    for line in stdout.strip().split("\n"):
+    """Find the type=result entry in claude -p output (JSONL or JSON array)."""
+    stripped = stdout.strip()
+    # Windows claude.exe outputs a JSON array; Unix outputs JSONL
+    if stripped.startswith("["):
+        try:
+            for obj in json.loads(stripped):
+                if obj.get("type") == "result":
+                    return obj
+        except Exception:
+            pass
+    for line in stripped.split("\n"):
         try:
             obj = json.loads(line)
             if obj.get("type") == "result":
@@ -77,8 +92,8 @@ def suggest():
         env["PYTHONIOENCODING"] = "utf-8"
 
         result = subprocess.run(
-            [
-                CLAUDE_EXE, "-p", prompt,
+            CLAUDE_CMD + [
+                "-p", prompt,
                 "--output-format", "json",
                 "--allowedTools",
                 f"mcp__{MCP_SERVER_NAME}__search_contacts,"
