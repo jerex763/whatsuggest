@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FF1B5E20"
+    android:padding="12dp"
+    android:elevation="8dp">
+
+    <TextView
+        android:id="@+id/tvLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="生成中..."
+        android:textColor="#FFFFFF"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFF5252"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/llSuggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button android:id="@+id/btnSuggestion1"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="#FFFFFF" android:background="@android:color/transparent"
+            android:gravity="start" android:paddingStart="0dp" />
+        <Button android:id="@+id/btnSuggestion2"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="#FFFFFF" android:background="@android:color/transparent"
+            android:gravity="start" android:paddingStart="0dp" />
+        <Button android:id="@+id/btnSuggestion3"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="#FFFFFF" android:background="@android:color/transparent"
+            android:gravity="start" android:paddingStart="0dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView android:id="@+id/tvStep"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="步骤 1 / 2" android:textSize="14sp" />
+
+    <TextView android:id="@+id/tvTitle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textSize="22sp" android:layout_marginTop="8dp" />
+
+    <TextView android:id="@+id/tvDescription"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" android:textSize="15sp" />
+
+    <EditText android:id="@+id/etServerUrl"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="服务器地址（如 http://100.96.108.35:8000）"
+        android:inputType="textUri" android:visibility="gone" />
+
+    <EditText android:id="@+id/etApiKey"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="API Key" android:inputType="textPassword" android:visibility="gone" />
+
+    <TextView android:id="@+id/tvTestResult"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:visibility="gone" />
+
+    <Button android:id="@+id/btnAction"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="32dp" android:text="继续" />
+</LinearLayout>
