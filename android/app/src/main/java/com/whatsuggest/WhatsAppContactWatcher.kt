@@ -7,10 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WhatsAppContactWatcher : AccessibilityService() {
-    private lateinit var overlayManager: OverlayManager
+    private var overlayManager: OverlayManager? = null
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var currentJob: Job? = null
 
@@ -19,41 +18,52 @@ class WhatsAppContactWatcher : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        val mgr = overlayManager ?: return
         val pkg = event.packageName?.toString() ?: return
         if (pkg != "com.whatsapp" && pkg != "com.whatsapp.w4b") {
-            overlayManager.hideButton(); return
+            mgr.hideButton()
+            return
         }
         val contactName = readContactName()
-        if (contactName != null) overlayManager.showButton { onSuggestTapped() }
-        else overlayManager.hideButton()
+        if (contactName != null) {
+            mgr.showButton { onSuggestTapped() }
+        } else {
+            mgr.hideButton()
+        }
     }
 
     private fun readContactName(): String? {
         val root = rootInActiveWindow ?: return null
+        val nodeId = Config.getNodeId(this)
         return try {
-            val nodes = root.findAccessibilityNodeInfosByViewId(Config.getNodeId(this))
-            val name = nodes.firstOrNull()?.text?.toString()?.takeIf { it.isNotBlank() }
-            nodes.forEach { it.recycle() }
+            val nodes = root.findAccessibilityNodeInfosByViewId(nodeId)
+            try {
+                nodes.firstOrNull()?.text?.toString()?.takeIf { it.isNotBlank() }
+            } finally {
+                nodes.forEach { it.recycle() }
+            }
+        } catch (e: Exception) {
+            null
+        } finally {
             root.recycle()
-            name
-        } catch (e: Exception) { null }
+        }
     }
 
     private fun onSuggestTapped() {
-        val contactName = readContactName() ?: run {
-            overlayManager.showLoading()
-            overlayManager.showError("请先打开一个对话")
+        val mgr = overlayManager ?: return
+        val contactName = readContactName()
+        if (contactName == null) {
+            mgr.showLoading()
+            mgr.showError("请先打开一个对话")
             return
         }
         currentJob?.cancel()
-        overlayManager.showLoading()
+        mgr.showLoading()
         currentJob = scope.launch {
-            val result = withContext(Dispatchers.IO) {
-                SuggestRepository.getSuggestions(this@WhatsAppContactWatcher, contactName)
-            }
+            val result = SuggestRepository.getSuggestions(this@WhatsAppContactWatcher, contactName)
             when (result) {
-                is SuggestResult.Success -> overlayManager.showSuggestions(result.suggestions)
-                is SuggestResult.Error -> overlayManager.showError(result.message)
+                is SuggestResult.Success -> mgr.showSuggestions(result.suggestions)
+                is SuggestResult.Error -> mgr.showError(result.message)
             }
         }
     }
@@ -62,7 +72,7 @@ class WhatsAppContactWatcher : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        overlayManager.hideButton()
+        overlayManager?.hideButton()
         currentJob?.cancel()
     }
 }

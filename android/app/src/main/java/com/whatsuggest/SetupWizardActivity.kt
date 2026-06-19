@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,7 +64,7 @@ class SetupWizardActivity : AppCompatActivity() {
                     }
                     btnAction.isEnabled = false
                     tvTest.text = "测试中..."; tvTest.visibility = View.VISIBLE
-                    CoroutineScope(Dispatchers.IO).launch {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         val ok = SuggestRepository.testConnection(url, key)
                         withContext(Dispatchers.Main) {
                             btnAction.isEnabled = true

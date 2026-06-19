@@ -10,20 +10,17 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 API_KEY = os.environ.get("SUGGEST_API_KEY", "")
 MCP_SERVER_NAME = os.environ.get("MCP_SERVER_NAME", "whatsapp")
-_claude_raw = shutil.which("claude") or r"C:\Users\111\.local\bin\claude.exe"
-# On Windows, shutil.which returns the .CMD wrapper which breaks subprocess line endings.
-# Use the actual .exe directly.
-if _claude_raw.upper().endswith(".CMD"):
-    _exe_candidate = _claude_raw.replace("claude.CMD", r"node_modules\@anthropic-ai\claude-code\bin\claude.exe").replace("claude.cmd", r"node_modules\@anthropic-ai\claude-code\bin\claude.exe")
-    _claude_raw = _exe_candidate if os.path.exists(_exe_candidate) else _claude_raw
-CLAUDE_CMD = [_claude_raw] if not _claude_raw.upper().endswith(".CMD") else ["cmd", "/c", _claude_raw]
+CLAUDE_CMD = [shutil.which("claude") or os.path.expanduser("~/.local/bin/claude")]
 APP_VERSION = "1.0.0"
 _semaphore = threading.Semaphore(2)
 
 
 def extract_suggestions(text: str) -> list:
     """Parse Claude output: strip markdown fences, parse JSON array."""
-    text = re.sub(r"```(?:json)?\s*", "", text).strip().rstrip("`").strip()
+    start = next((i for i, c in enumerate(text) if c in "[{"), 0)
+    text = text[start:]
+    if text.endswith("```"):
+        text = text[:-3].strip()
     data = json.loads(text)
     if isinstance(data, list):
         return [str(s) for s in data[:3]]
@@ -35,7 +32,6 @@ def extract_suggestions(text: str) -> list:
 def find_result(stdout: str) -> dict:
     """Find the type=result entry in claude -p output (JSONL or JSON array)."""
     stripped = stdout.strip()
-    # Windows claude.exe outputs a JSON array; Unix outputs JSONL
     if stripped.startswith("["):
         try:
             for obj in json.loads(stripped):
@@ -65,7 +61,7 @@ def server_error(e):
 
 @app.post("/suggest")
 def suggest():
-    if request.headers.get("X-API-Key") != API_KEY:
+    if not API_KEY or request.headers.get("X-API-Key") != API_KEY:
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json(silent=True) or {}
@@ -89,7 +85,6 @@ def suggest():
         )
 
         env = os.environ.copy()
-        env["PYTHONIOENCODING"] = "utf-8"
 
         result = subprocess.run(
             CLAUDE_CMD + [
@@ -109,7 +104,7 @@ def suggest():
 
         output = find_result(result.stdout)
         if output is None:
-            return jsonify({"error": "no result from claude", "stderr": result.stderr[:500]}), 500
+            return jsonify({"error": "no result from claude", "stderr": result.stderr[:300], "stdout": result.stdout[:300]}), 500
 
         if output.get("is_error"):
             return jsonify({"error": "claude error", "detail": output.get("result", "")}), 500

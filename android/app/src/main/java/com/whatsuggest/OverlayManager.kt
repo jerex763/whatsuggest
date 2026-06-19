@@ -35,12 +35,24 @@ class OverlayManager(private val service: AccessibilityService) {
             WindowManager.LayoutParams.WRAP_CONTENT
         ).apply { gravity = Gravity.BOTTOM or Gravity.END; x = 24; y = 200 }
         view.findViewById<Button>(R.id.btnSuggest).setOnClickListener { onTap() }
-        wm.addView(view, params)
-        buttonView = view
+        try {
+            wm.addView(view, params)
+            buttonView = view
+        } catch (e: Exception) {
+            return
+        }
     }
 
     fun hideButton() {
-        buttonView?.let { wm.removeView(it); buttonView = null }
+        buttonView?.let {
+            try {
+                wm.removeView(it)
+            } catch (e: Exception) {
+                buttonView = null
+                return
+            }
+            buttonView = null
+        }
         hidePopup()
     }
 
@@ -54,8 +66,12 @@ class OverlayManager(private val service: AccessibilityService) {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         ).apply { gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL; y = 280 }
-        wm.addView(view, params)
-        popupView = view
+        try {
+            wm.addView(view, params)
+            popupView = view
+        } catch (e: Exception) {
+            return
+        }
     }
 
     fun showSuggestions(suggestions: List<String>) {
@@ -91,6 +107,14 @@ class OverlayManager(private val service: AccessibilityService) {
     fun hidePopup() = dismissPopupView()
 
     private fun dismissPopupView() {
-        popupView?.let { wm.removeView(it); popupView = null }
+        popupView?.let {
+            try {
+                wm.removeView(it)
+            } catch (e: Exception) {
+                popupView = null
+                return
+            }
+            popupView = null
+        }
     }
 }
