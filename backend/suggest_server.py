@@ -138,8 +138,8 @@ if __name__ == "__main__":
             ["tailscale", "ip", "--4"],
             capture_output=True, text=True, timeout=5
         )
-        ip = result.stdout.strip() if result.returncode == 0 else "127.0.0.1"
+        ip = result.stdout.strip() if result.returncode == 0 else "0.0.0.0"
     except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
-        ip = "127.0.0.1"
+        ip = "0.0.0.0"
     print(f"Serving on http://{ip}:8000")
     serve(app, host=ip, port=8000, threads=8)
