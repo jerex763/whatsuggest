@@ -12,6 +12,7 @@ class WhatsAppContactWatcher : AccessibilityService() {
     private var overlayManager: OverlayManager? = null
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var currentJob: Job? = null
+    private var inFlightContact: String? = null
 
     override fun onServiceConnected() {
         overlayManager = OverlayManager(this)
@@ -22,14 +23,26 @@ class WhatsAppContactWatcher : AccessibilityService() {
         val pkg = event.packageName?.toString() ?: return
         if (pkg != "com.whatsapp" && pkg != "com.whatsapp.w4b") {
             mgr.hideButton()
+            cancelInFlight()
             return
         }
         val contactName = readContactName()
         if (contactName != null) {
             mgr.showButton { onSuggestTapped() }
+            if (inFlightContact != null && contactName != inFlightContact) {
+                cancelInFlight()
+                mgr.hidePopup()
+            }
         } else {
             mgr.hideButton()
+            cancelInFlight()
         }
+    }
+
+    private fun cancelInFlight() {
+        currentJob?.cancel()
+        currentJob = null
+        inFlightContact = null
     }
 
     private fun readContactName(): String? {
@@ -58,9 +71,15 @@ class WhatsAppContactWatcher : AccessibilityService() {
             return
         }
         currentJob?.cancel()
+        inFlightContact = contactName
         mgr.showLoading()
         currentJob = scope.launch {
             val result = SuggestRepository.getSuggestions(this@WhatsAppContactWatcher, contactName)
+            inFlightContact = null
+            if (readContactName() != contactName) {
+                mgr.hidePopup()
+                return@launch
+            }
             when (result) {
                 is SuggestResult.Success -> mgr.showSuggestions(result.suggestions)
                 is SuggestResult.Error -> mgr.showError(result.message)

@@ -50,7 +50,9 @@ object SuggestRepository {
                         401 -> SuggestResult.Error("认证失败，请检查 API Key")
                         429 -> SuggestResult.Error("服务繁忙，请稍等后重试")
                         504 -> SuggestResult.Error("生成超时，请重试")
-                        else -> SuggestResult.Error("服务器错误 (${response.code})")
+                        else -> SuggestResult.Error(
+                            serverDetail(response.body?.string()) ?: "服务器错误 (${response.code})"
+                        )
                     }
                 }
             } catch (e: java.net.ConnectException) {
@@ -62,6 +64,14 @@ object SuggestRepository {
             }
         }
     }
+
+    private fun serverDetail(body: String?): String? = runCatching {
+        val json = JSONObject(body ?: return null)
+        listOf(json.optString("error"), json.optString("detail"))
+            .filter { it.isNotEmpty() }
+            .joinToString(": ")
+            .ifEmpty { null }
+    }.getOrNull()
 
     fun testConnection(serverUrl: String, apiKey: String): Boolean {
         val request = Request.Builder()
