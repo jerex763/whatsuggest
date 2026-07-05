@@ -2,6 +2,12 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **⚠️ Scope change (2026-07-05):** Multi-friend sharing is cut — the backend serves one WhatsApp
+> account only (see design.md scope note). Task 5 (Tailscale node sharing with friends) and
+> Task 14 Step 6 (send APK to friends) are obsolete. The backend architecture also changed:
+> `/suggest` now reads messages.db directly and makes a single no-tools `claude -p` call
+> (Task 3's MCP-tools approach is superseded by `backend/suggest_server.py` as committed).
+
 **Goal:** Build a WhatsApp AI reply suggestion app — Android floating button triggers PC-side Claude to fetch chat history via whatsapp-mcp and return 3 reply suggestions.
 
 **Architecture:** Android AccessibilityService reads the current WhatsApp contact name and sends it over Tailscale to a Flask server on the PC. The server calls `claude -p` with whatsapp-mcp MCP tools, which fetches the last 30 messages and generates 3 reply suggestions returned as JSON.
