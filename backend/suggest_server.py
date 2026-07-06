@@ -15,7 +15,7 @@ MESSAGES_DB = os.environ.get(
 )
 CLAUDE = shutil.which("claude") or os.path.expanduser("~/.local/bin/claude")
 APP_VERSION = "1.1.0"
-MESSAGE_LIMIT = 30
+MESSAGE_LIMIT = int(os.environ.get("MESSAGE_LIMIT", "60"))
 SYNC_PENDING = ["消息同步中，请稍后重试", "", ""]
 _semaphore = threading.Semaphore(2)
 
