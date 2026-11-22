@@ -43,7 +43,7 @@ class SetupWizardActivity : AppCompatActivity() {
             1 -> {
                 tvStep.text = "步骤 1 / 2"
                 tvTitle.text = "开启无障碍权限"
-                tvDesc.text = "WhatSuggest 需要无障碍权限来检测当前打开的 WhatsApp 对话。\n\n点击下方按钮，找到 WhatSuggest，开启开关。"
+                tvDesc.text = "WhatSuggest 需要无障碍权限，用来识别当前打开的 WhatsApp 对话，并把你点的建议填进输入框。\n\n它不会自动发送。\n\n点击下方按钮，找到 WhatSuggest，开启开关。"
                 etUrl.visibility = View.GONE; etKey.visibility = View.GONE
                 btnAction.text = "去开启权限"
                 btnAction.setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }

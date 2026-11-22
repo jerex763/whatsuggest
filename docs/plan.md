@@ -1,5 +1,7 @@
 # WhatSuggest Implementation Plan
 
+> **Superseded.** The current architecture is in `README.md`. This plan describes the original Claude MCP design and is kept as history.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a WhatsApp AI reply suggestion app — Android floating button triggers PC-side Claude to fetch chat history via whatsapp-mcp and return 3 reply suggestions.

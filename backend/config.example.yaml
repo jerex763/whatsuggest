@@ -1,0 +1,90 @@
+# WhatSuggest config.
+# Copy this file to config.yaml and edit it. 把这个文件复制成 config.yaml 再改。
+# Do not put API keys in this file. The server reads SUGGEST_API_KEY from the environment.
+# 不要把 API key 写在这里。服务器从环境变量 SUGGEST_API_KEY 读取。
+
+server:
+  # Leave empty to bind to this PC's Tailscale IPv4 (tailscale ip --4).
+  # 留空则自动绑定这台电脑的 Tailscale IPv4。不要写 0.0.0.0。
+  host: ""
+  port: 8000
+
+database:
+  # whatsapp-mcp bridge message database. Read-only.
+  # whatsapp-mcp 桥接程序的消息库，只读。
+  path: "C:/whatsapp-mcp/whatsapp-bridge/store/messages.db"
+
+llm:
+  # codex uses the Codex CLI login (codex login). openai uses an API key later.
+  provider: codex
+  codex:
+    command: ""          # empty = auto-detect. 留空则自动寻找 codex。
+    model: ""            # empty = the model in your Codex config
+    timeout_seconds: 75
+    sandbox: read-only   # suggestions do not need to edit files or run commands
+    ephemeral: true
+    skip_git_repo_check: true
+    ignore_user_config: false
+    # false: ignore OPENAI_API_KEY so Codex uses the ChatGPT / Codex login.
+    use_api_key: false
+    extra_args: []
+  openai:
+    model: gpt-4.1-mini
+    api_key_env: OPENAI_API_KEY
+    base_url: https://api.openai.com/v1
+    timeout_seconds: 60
+
+history:
+  limit: 30
+
+watcher:
+  enabled: true
+  poll_interval_seconds: 2
+  debounce_seconds: 8
+  skip_groups: true
+  # Ignore backlog rows older than this so a history sync cannot queue dozens of calls.
+  pregenerate_max_age_seconds: 600
+
+max_concurrent: 2
+
+persona:
+  name: Florence
+  voice: |
+    Warm, brief, and natural. Sound like a person texting, not an assistant.
+    Match the length of a normal chat reply. No sign-off and no quotation marks.
+  never_say:
+    - "As an AI"
+    - "Certainly"
+    - "I hope this message finds you well"
+
+# One block can cover a single contact or several contacts who share a tone.
+# names should include the name shown on the phone AND the name stored by the bridge
+# if those differ. jids is optional and is the reliable match.
+# 电话上显示的名字和电脑数据库里的名字如果不一样，两个都写上。jid 最准确。
+contacts:
+  - match:
+      names: ["妈妈", "Mom"]
+      jids: []   # example: "8613800138000@s.whatsapp.net"
+    tone: "亲一点，口语，短句"
+    language: zh
+    never_say:
+      - "亲"
+    examples:
+      - "好的妈，我知道了"
+      - "晚上回家吃饭"
+
+  - match:
+      names: ["Alice Smith", "Acme"]
+      jids: []
+    tone: "professional, friendly, concise"
+    language: en
+    never_say:
+      - "kinda"
+    examples:
+      - "Thanks Alice, I'll send it over today."
+
+# Chats listed here never get suggestions, including from the refresh button.
+# 这里的联系人不会生成建议，刷新按钮也不行。
+muted:
+  - name: "Promotions"
+  # - jid: "1234567890@g.us"

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cleartext HTTP is allowed because Florence types her PC's Tailscale address
+  in the setup screen. Android domain rules cannot express the 100.64.0.0/10
+  range, so that address is not hardcoded here.
+  The PC firewall still allows port 8000 only from Tailscale.
+-->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="false" />
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">100.96.108.35</domain>
-    </domain-config>
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

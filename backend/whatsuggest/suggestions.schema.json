@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["suggestions"],
+  "properties": {
+    "suggestions": {
+      "type": "array",
+      "description": "Exactly three WhatsApp replies the user could send. Plain message text only.",
+      "items": { "type": "string" }
+    }
+  }
+}

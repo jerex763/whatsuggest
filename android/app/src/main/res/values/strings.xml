@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WhatSuggest</string>
-    <string name="accessibility_description">WhatSuggest reads the current WhatsApp contact name to generate AI reply suggestions</string>
+    <string name="accessibility_description">WhatSuggest reads the open WhatsApp chat name and message box to show reply suggestions. It never sends messages. It does not read other apps.</string>
+    <string name="dismiss_suggestions">关闭建议</string>
 </resources>
