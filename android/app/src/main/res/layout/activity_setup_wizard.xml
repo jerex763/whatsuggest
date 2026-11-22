@@ -20,7 +20,7 @@
     <EditText android:id="@+id/etServerUrl"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:hint="服务器地址（如 http://100.96.108.35:8000）"
+        android:hint="服务器地址（http://Tailscale的IP:8000）"
         android:inputType="textUri" android:visibility="gone" />
 
     <EditText android:id="@+id/etApiKey"

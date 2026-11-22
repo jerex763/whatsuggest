@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="WhatSuggest"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="打开 WhatsApp 对话后，输入框上方会自动出现 3 条回复建议。点一条会填进输入框，需要你自己按发送。应用不会自动发送。\n\n长按对话里的 AI 按钮可以静音这个联系人。"
+            android:textSize="15sp" />
+
+        <CheckBox
+            android:id="@+id/cbAutoSuggest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="打开对话时自动显示建议" />
+
+        <EditText
+            android:id="@+id/etServerUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="服务器地址（http://Tailscale的IP:8000）"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/etApiKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="API Key"
+            android:inputType="textPassword" />
+
+        <TextView
+            android:id="@+id/tvSettingsResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnSaveSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="测试并保存" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="手机上已静音的联系人"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvMuted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="无" />
+
+        <Button
+            android:id="@+id/btnClearMutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="清除手机静音" />
+
+        <Button
+            android:id="@+id/btnAccessibility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="无障碍设置" />
+    </LinearLayout>
+</ScrollView>

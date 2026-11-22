@@ -1,14 +1,21 @@
 @echo off
-:: Run as Administrator
-:: Allow Tailscale IPs (100.64.0.0/10) to reach port 8000
+:: Run as Administrator.
+:: Allow the Tailscale range 100.64.0.0/10 to reach the suggestion port, and block everyone else.
+set "PORT=8000"
+
+netsh advfirewall firewall delete rule name="WhatSuggest Allow Tailscale" >nul 2>&1
+netsh advfirewall firewall delete rule name="WhatSuggest Block Others" >nul 2>&1
+netsh advfirewall firewall delete rule name="WhatSuggest API Allow Tailscale" >nul 2>&1
+netsh advfirewall firewall delete rule name="WhatSuggest API Block Others" >nul 2>&1
+
 netsh advfirewall firewall add rule ^
     name="WhatSuggest Allow Tailscale" ^
     dir=in action=allow protocol=TCP ^
-    localport=8000 remoteip=100.64.0.0/10
+    localport=%PORT% remoteip=100.64.0.0/10
 
-:: Block all other IPs from port 8000
 netsh advfirewall firewall add rule ^
     name="WhatSuggest Block Others" ^
-    dir=in action=block protocol=TCP localport=8000
+    dir=in action=block protocol=TCP localport=%PORT%
 
-echo Firewall rules added.
+echo Firewall rules added for TCP %PORT%.
+echo Only Tailscale addresses (100.64.0.0/10) can connect.

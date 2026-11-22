@@ -17,6 +17,7 @@ android/keystore.jks
 # Secrets
 *.env
 config.local.*
+backend/config.yaml
 tailscale_key.txt
 
 # Logs
